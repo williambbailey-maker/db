@@ -9,7 +9,7 @@ import {
   saveSessions,
   saveSettings,
 } from './lib/storage';
-import { formatDuration } from './lib/levels';
+import { backgroundForLevel, formatDuration } from './lib/levels';
 import type { Session, Settings } from './lib/types';
 
 type View = 'meter' | 'history';
@@ -153,6 +153,8 @@ export default function App() {
     setShowSettings(false);
   }, []);
 
+  const background = backgroundForLevel(db, settings.threshold, recording);
+
   return (
     <div
       className="min-h-full flex flex-col max-w-md mx-auto px-5"
@@ -161,6 +163,10 @@ export default function App() {
         paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)',
       }}
     >
+      <div
+        className="fixed inset-0 -z-10"
+        style={{ background, transition: 'background 0.15s linear' }}
+      />
       <header className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold tracking-tight">dB</h1>
         <button
@@ -178,7 +184,7 @@ export default function App() {
             key={v}
             onClick={() => setView(v)}
             className={`flex-1 py-2 rounded-full capitalize transition ${
-              view === v ? 'bg-white/10 text-white' : 'text-white/40'
+              view === v ? 'bg-white/15 text-white' : 'text-white/60'
             }`}
           >
             {v}
@@ -191,9 +197,9 @@ export default function App() {
           <div className="flex-1 flex flex-col items-center justify-center gap-6">
             <Gauge db={db} threshold={settings.threshold} active={recording} />
 
-            <p className="text-sm text-white/40">
+            <p className="text-sm text-white/80">
               Turns red above{' '}
-              <span className="font-semibold text-white/70">
+              <span className="font-semibold text-white">
                 {settings.threshold} dB
               </span>
             </p>
@@ -240,8 +246,8 @@ export default function App() {
             disabled={status === 'requesting'}
             className="mt-6 w-full py-4 rounded-2xl font-semibold text-lg active:scale-[0.99] transition disabled:opacity-60"
             style={{
-              background: recording ? '#ff453a' : '#30d158',
-              color: recording ? '#fff' : '#04210f',
+              background: '#ffffff',
+              color: recording ? '#c4271d' : '#0b6b34',
             }}
           >
             {status === 'requesting'
